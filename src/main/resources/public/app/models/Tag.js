@@ -3,7 +3,7 @@ Ext.define('app.models.Tag', {
 
     proxy: {
         type: 'rest',
-        url: '/tag',
+        url: 'tag',
         writer: {
             writeAllFields: true
         }
