@@ -15,7 +15,7 @@ Ext.define('app.stores.TagStore', {
 
     proxy: {
         type: 'app-rest',
-        url: '/tag',
+        url: 'tag',
         api: {
             read: 'tag/query'
         }
