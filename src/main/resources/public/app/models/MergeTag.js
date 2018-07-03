@@ -3,7 +3,7 @@ Ext.define('app.models.MergeTag', {
 
     proxy: {
         type: 'rest',
-        url: '/mergeTag',
+        url: 'mergeTag',
         writer: {
             writeAllFields: true
         }
