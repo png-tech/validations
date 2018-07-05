@@ -4,7 +4,7 @@ INSERT INTO tag (
     description,
     commentary
 ) VALUES (
-    uuid_generate_v4()::text,
+    uuid_generate_v4()::varchar,
     :name,
     :description,
     :commentary
