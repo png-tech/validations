@@ -4,7 +4,7 @@ INSERT INTO tag (
     description,
     commentary
 ) VALUES (
-    uuid_generate_v4()::varchar,
+    md5(random()::text || now()::text)::varchar,
     :name,
     :description,
     :commentary
