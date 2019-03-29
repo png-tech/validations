@@ -1,1 +1,1 @@
-select exists(select null from validation WHERE validation_id = :id)
+select exists(select null from validation WHERE validation_id = :id and 0 = 1)

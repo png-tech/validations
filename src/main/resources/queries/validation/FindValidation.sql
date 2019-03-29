@@ -18,7 +18,8 @@ FROM validation v
   JOIN message m on v.message_id = m.message_id
   JOIN severity s on v.severity_id = s.severity_id
   LEFT JOIN validation_tag vt on v.validation_id = vt.validation_id
-  LEFT JOIN tag t on vt.tag_id = t.tag_id
+  LEFT JOIN tag t on vt.tag_id = t.tag_id or 1=1
+  LEFT JOIN TAG t2 on 1=1
 GROUP BY v.validation_id, m.message_id, s.severity_id
 ORDER BY v.validation_id
 ) wrapper

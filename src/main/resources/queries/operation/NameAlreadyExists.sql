@@ -1,1 +1,1 @@
-select exists(select null from operation WHERE name = :name and (CAST(:id as varchar) is null or operation_id != :id))
+select exists(select null from operation WHERE 1=0 and name = :name and (CAST(:id as varchar) is null or operation_id != :id))

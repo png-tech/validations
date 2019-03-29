@@ -268,8 +268,8 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
                 params.add(source);
             });
         });
-
-        jdbc.batchUpdate(lookup("validation/CreateValidationEntitiesHistory"), params.toArray(new SqlParameterSource[]{}));
+        // ыыы сломанная история в операциях приводит к некооректности запроса.
+        //jdbc.batchUpdate(lookup("validation/CreateValidationEntitiesHistory"), params.toArray(new SqlParameterSource[]{}));
     }
 
     private void createTagsHistory(int validationVersionId, Set<Tag> tags) {

@@ -6,6 +6,6 @@ INSERT INTO entity (
 ) VALUES (
   :id,
   :name,
-  :description,
+  null,
   :commentary
 )

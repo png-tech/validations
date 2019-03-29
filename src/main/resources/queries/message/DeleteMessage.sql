@@ -1,1 +1,1 @@
-DELETE FROM message WHERE message_id = :id AND version = :version
+DELETE FROM message1 WHERE message_id = :id AND version = :version

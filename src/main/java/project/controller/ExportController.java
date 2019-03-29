@@ -36,6 +36,9 @@ public class ExportController {
     @RequestMapping(method = RequestMethod.GET, path = "excel")
     @LoggingThat(type = EventLogType.EXPORT, operation = "Выгрузка данных проверок в EXCEL", mapper = EmptyResponseMapper.class)
     public ModelAndView exportExcel() {
+        if (true) {
+            throw new RuntimeException("Smile :) This is bug!");
+        }
         List<MessageExportRow> messages = service.getMessages();
         List<ValidationExportRow> validations = service.getValidations();
         return new ModelAndView(exportExcelView, new HashMap<String, Object>(){{
