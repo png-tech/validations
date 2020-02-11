@@ -153,12 +153,27 @@ Ext.define('app.views.ValidationWindow', {
                 xtype: 'custom-combo',
                 store: {
                     type: 'message-store',
-                    autoLoad: false
+                    autoLoad: true
                 },
                 valueField: 'id',
                 displayField: 'id',
                 fieldLabel: 'Код сообщения об ошибке',
+                listeners: {
+                    change: 'onCodeOfMessageChange'
+                },
                 name: 'messageId'
+            },
+            {
+                xtype: 'custom-combo',
+                store: {
+                    type: 'message-store',
+                    autoLoad: true
+                },
+                valueField: 'id',
+                displayField: 'text',
+                editable: false,
+                fieldLabel: 'Текст сообщения об ошибке',
+                name: 'messageText'
             },
             {
                 xtype: 'resizable-textarea',
@@ -176,8 +191,19 @@ Ext.define('app.views.ValidationWindow', {
                 xtype: 'numberfield',
                 name: 'version',
                 hidden: true
+            },
+            {
+                xtype: 'checkbox',
+                inputValue: true,
+                uncheckedValue: false,
+                name: 'deactivated',
+                hidden: true
             }
         ];
+    },
+
+    setReadOnly: function () {
+        this.down('button[name=delete]').setDisabled(true);
     }
 
 });

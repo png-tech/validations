@@ -1,24 +1,11 @@
 package project.dao.validation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-
 import project.dao.BaseVersionableModelDao;
 import project.dao.ConcurrentModificationException;
 import project.dao.FindAbility;
@@ -30,11 +17,11 @@ import project.model.message.Message;
 import project.model.operation.Operation;
 import project.model.query.SearchParams;
 import project.model.tag.Tag;
-import project.model.validation.Severity;
-import project.model.validation.Validation;
-import project.model.validation.ValidationDto;
-import project.model.validation.ValidationEntity;
-import project.model.validation.ValidationExportRow;
+import project.model.validation.*;
+
+import javax.sql.DataSource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -48,7 +35,9 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
     private RowMapper<Validation> mapper = (rs, rowNum) -> {
         Message message = new Message(rs.getString("m_id"), rs.getString("m_text"), rs.getInt("m_version"), rs.getString("m_commentary"));
         Severity severity = Severity.resolveById(rs.getInt("severityId"));
-        return new Validation(rs.getString("id"), severity, message, rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        Validation validation = new Validation(rs.getString("id"), severity, message, rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        validation.setDeactivated(rs.getBoolean("deactivated"));
+        return validation;
     };
 
     private ResultSetExtractor<Map<String, Validation>> validationsByIdExtractor = rs -> {
@@ -93,6 +82,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         dto.entityNames = rs.getString("entityNames");
         dto.operationNames = rs.getString("operationNames");
         dto.tagNames = rs.getString("tagNames");
+        dto.deactivated = rs.getBoolean("deactivated");
 
         return dto;
     };
@@ -147,6 +137,11 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
     @Override
     public Validation load(String validationId) {
         return requiredSingleResult(load(singletonList(validationId)));
+    }
+
+    public List<Integer> getValidationVersionIdByValidationId(Set<String> validationId) {
+        return jdbc.query(lookup("validation/LoadValidationVersionIdByValidationId"),
+                singletonMap("ids", validationId), (rs, rowNum) -> rs.getInt("validation_version_id"));
     }
 
     public List<Validation> load(List<String> validationIds) {
@@ -290,6 +285,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         Map<String, Object> params = super.prepareParams(validation);
         params.put("severityId", validation.getSeverity().getId());
         params.put("messageId", validation.getMessage().getId());
+        params.put("text", validation.getMessage().getText());
         params.put("description", validation.getDescription());
         return params;
     }
@@ -353,10 +349,20 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         return result;
     }
 
+    private Map<String, Set<ValidationEntity>> loadEntitiesVersionsByList(List<Integer> validationVersionId) {
+        return jdbc.query(lookup("validation/LoadValidationEntitiesVersions"),
+                singletonMap("id", validationVersionId), rse);
+    }
+
     private Set<Tag> loadTagsVersions(int validationVersionId) {
         List<Tag> data = jdbc.query(lookup("validation/LoadTagsVersion"), singletonMap("id", validationVersionId),
                 TagDao.TAG_MAPPER);
         return new HashSet<>(data);
+    }
+
+    private Map<String, Set<Tag>> loadTagsVersionsToMap(List<Integer> validationVersionIds) {
+        return jdbc.query(lookup("validation/LoadTagsVersion"), singletonMap("id", validationVersionIds),
+                tagsByValidationIdExtractor);
     }
 
     public List<ValidationExportRow> exportValidations() {

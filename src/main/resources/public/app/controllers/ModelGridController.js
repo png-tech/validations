@@ -23,6 +23,9 @@ Ext.define('app.controllers.ModelGridController', {
             gridStore: this.getView().store
         });
         window.show();
+        if (row.get('deactivated') === true) {
+            window.setReadOnly();
+        }
         window.setLoading(true);
 
         var requestConfig = {

@@ -9,6 +9,13 @@ Ext.define('app.views.ValidationGrid', {
 
     controller: 'validation-grid-controller',
 
+    viewConfig: {
+        getRowClass: function (record) {
+            if (record.get('deactivated') === true)
+                return 'red-row'
+        }
+    },
+
     /** @override */
     createStore: function (storeConfig) {
         return Ext.create('app.stores.ValidationStore', storeConfig);

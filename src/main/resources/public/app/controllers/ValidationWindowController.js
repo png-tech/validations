@@ -56,6 +56,11 @@ Ext.define('app.controllers.ValidationWindowController', {
         grid.getStore().remove(row);
     },
 
+    onCodeOfMessageChange: function(){
+        var messageId = this.getView().down('custom-combo[name=messageId]').getValue();
+        this.getView().down('custom-combo[name=messageText]').setValue(messageId);
+    },
+
     /** Удаление строки с сущностью и операциями по нажатию на крестик той же строки. */
     onDeleteGridRow: function (view, rowIndex) {
         view.getStore().removeAt(rowIndex);

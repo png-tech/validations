@@ -14,4 +14,4 @@ SELECT
 FROM validation_entity_operation_h veo
   JOIN entity_h e ON veo.entity_version_id = e.entity_version_id
   JOIN operation_h o ON veo.operation_version_id = o.operation_version_id
-WHERE veo.validation_version_id = :id
+WHERE veo.validation_version_id IN (:id)
