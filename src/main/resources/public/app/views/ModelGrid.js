@@ -10,6 +10,13 @@ Ext.define('app.views.ModelGrid', {
 
     plugins: 'gridfilters',
 
+    viewConfig: {
+        getRowClass: function (record) {
+            if (record.get('deactivated') === true)
+                return 'red-row'
+        }
+    },
+
     constructor: function () {
         this.callParent(arguments);
 
