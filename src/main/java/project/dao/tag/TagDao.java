@@ -32,8 +32,12 @@ import static project.dao.SearchParamsProcessor.process;
 public class TagDao extends BaseVersionableModelDao<Tag> implements FindAbility<Tag> {
 
     public static final RowMapper<Tag> TAG_MAPPER =
-            (rs, rowNum) -> new Tag(rs.getString("id"), rs.getString("name"), rs.getInt("version"),
-                    rs.getString("commentary"), rs.getString("description"));
+            (rs, rowNum) -> {
+        Tag tag = new Tag(rs.getString("id"), rs.getString("name"), rs.getInt("version"),
+                        rs.getString("commentary"), rs.getString("description"));
+                tag.setDeactivated(rs.getBoolean("deactivated"));
+                return tag;
+            };
 
     private final static String TAG_ID_COLUMN = "tag_id";
 
@@ -77,6 +81,11 @@ public class TagDao extends BaseVersionableModelDao<Tag> implements FindAbility<
         if (affectedRows == 0) {
             throw new ConcurrentModificationException();
         }
+        createHistory(tag);
+    }
+
+    public void updateDeactivated(Tag tag) {
+        jdbc.update(lookup("tag/UpdateDeactivatedTag"), prepareParams(tag));
         createHistory(tag);
     }
 

@@ -49,7 +49,12 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void update(Tag model) {
-        tagDao.update(model);
+        if(model.isDeactivated()) {
+            tagDao.updateDeactivated(model);
+            model.setDeactivated(false);
+        } else {
+            tagDao.update(model);
+        }
     }
 
     @Override
