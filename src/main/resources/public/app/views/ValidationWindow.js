@@ -200,10 +200,6 @@ Ext.define('app.views.ValidationWindow', {
                 hidden: true
             }
         ];
-    },
-
-    setReadOnly: function () {
-        this.down('button[name=delete]').setDisabled(true);
     }
 
 });

@@ -197,6 +197,15 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         }
     }
 
+    public void updateDeactivated(Validation validation) {
+        jdbc.update(lookup("validation/UpdateDeactivatedValidation"), prepareParams(validation));
+
+        createEntityOperations(singletonList(validation));
+        createTags(singletonList(validation));
+
+        createHistory(validation);
+    }
+
     private void createEntityOperations(List<Validation> validations) {
         List<SqlParameterSource> params = new ArrayList<>();
 

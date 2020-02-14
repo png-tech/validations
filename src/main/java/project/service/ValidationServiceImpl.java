@@ -43,7 +43,11 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void update(Validation validation) {
-        dao.update(validation);
+        if(validation.isDeactivated()) {
+            dao.updateDeactivated(validation);
+        } else {
+            dao.update(validation);
+        }
     }
 
     @Override
