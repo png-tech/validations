@@ -22,8 +22,11 @@ import static project.dao.SearchParamsProcessor.process;
 @Repository
 public class EntityDao extends BaseVersionableModelDao<Entity> implements FindAbility<Entity>, EntityValidatorDao {
 
-    private RowMapper<Entity> mapper = (rs, rowNum) -> new Entity(rs.getString("id"), rs.getString("name"), rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
-
+    private RowMapper<Entity> mapper = (rs, rowNum) -> {
+        Entity entity = new Entity(rs.getString("id"), rs.getString("name"), rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        entity.setDeactivated(rs.getBoolean("deactivated"));
+        return entity;
+    };
 
     public EntityDao(DataSource ds) {
         super(ds);
@@ -48,6 +51,11 @@ public class EntityDao extends BaseVersionableModelDao<Entity> implements FindAb
         if (rowsAffected == 0) {
             throw new ConcurrentModificationException();
         }
+        createHistory(entity);
+    }
+
+    public void updateDeactivated(Entity entity) {
+        jdbc.update(lookup("entity/UpdateDeactivatedEntity"), prepareParams(entity));
         createHistory(entity);
     }
 
