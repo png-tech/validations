@@ -36,6 +36,13 @@ Ext.define('app.views.OperationWindow', {
                 xtype: 'numberfield',
                 name: 'version',
                 hidden: true
+            },
+            {
+                xtype: 'checkbox',
+                inputValue: true,
+                uncheckedValue: false,
+                name: 'deactivated',
+                hidden: true
             }
         ];
     }
