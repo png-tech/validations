@@ -33,7 +33,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void update(Message message) {
-        dao.update(message);
+        if(message.isDeactivated()) {
+            dao.updateDeactivated(message);
+        } else {
+            dao.update(message);
+        }
     }
 
     @Override

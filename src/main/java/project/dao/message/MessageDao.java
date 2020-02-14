@@ -23,7 +23,12 @@ import static project.dao.SearchParamsProcessor.process;
 @Repository
 public class MessageDao extends BaseVersionableModelDao<Message> implements FindAbility<Message>, MessageValidatorDao, MessageExportDao {
 
-    private RowMapper<Message> mapper = (rs, rowNum) -> new Message(rs.getString("id"), rs.getString("text"), rs.getInt("version"), rs.getString("commentary"));
+    private RowMapper<Message> mapper = (rs, rowNum) -> {
+        Message message = new Message(rs.getString("id"), rs.getString("text"), rs.getInt("version"), rs.getString("commentary"));
+        message.setDeactivated(rs.getBoolean("deactivated"));
+        return message;
+    };
+
     private RowMapper<MessageExportRow> exportMapper = (rs, rowNum) -> new MessageExportRow(rs.getString("code"), rs.getString("text"));
 
     public MessageDao(DataSource ds) {
@@ -47,6 +52,12 @@ public class MessageDao extends BaseVersionableModelDao<Message> implements Find
         if (affectedRows == 0) {
             throw new ConcurrentModificationException();
         }
+        createHistory(message);
+    }
+
+
+    public void updateDeactivated(Message message) {
+        jdbc.update(lookup("message/UpdateDeactivatedMessage"), prepareParams(message));
         createHistory(message);
     }
 
@@ -113,5 +124,4 @@ public class MessageDao extends BaseVersionableModelDao<Message> implements Find
     public String getCurrentCommentary(String messageId) {
         return jdbc.queryForObject(lookup("message/GetCurrentCommentary"), singletonMap("messageId", messageId), String.class);
     }
-
 }
