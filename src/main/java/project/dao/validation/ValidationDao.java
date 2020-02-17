@@ -138,12 +138,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
     public Validation load(String validationId) {
         return requiredSingleResult(load(singletonList(validationId)));
     }
-
-    public List<Integer> getValidationVersionIdByValidationId(Set<String> validationId) {
-        return jdbc.query(lookup("validation/LoadValidationVersionIdByValidationId"),
-                singletonMap("ids", validationId), (rs, rowNum) -> rs.getInt("validation_version_id"));
-    }
-
+    
     public List<Validation> load(List<String> validationIds) {
         Map<String, Validation> validations =
                 jdbc.query(lookup("validation/LoadValidation"), singletonMap("ids", validationIds), validationsByIdExtractor);
@@ -294,7 +289,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         Map<String, Object> params = super.prepareParams(validation);
         params.put("severityId", validation.getSeverity().getId());
         params.put("messageId", validation.getMessage().getId());
-        params.put("text", validation.getMessage().getText());
+        params.put("messageText", validation.getMessage().getText());
         params.put("description", validation.getDescription());
         return params;
     }
@@ -358,20 +353,10 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         return result;
     }
 
-    private Map<String, Set<ValidationEntity>> loadEntitiesVersionsByList(List<Integer> validationVersionId) {
-        return jdbc.query(lookup("validation/LoadValidationEntitiesVersions"),
-                singletonMap("id", validationVersionId), rse);
-    }
-
     private Set<Tag> loadTagsVersions(int validationVersionId) {
         List<Tag> data = jdbc.query(lookup("validation/LoadTagsVersion"), singletonMap("id", validationVersionId),
                 TagDao.TAG_MAPPER);
         return new HashSet<>(data);
-    }
-
-    private Map<String, Set<Tag>> loadTagsVersionsToMap(List<Integer> validationVersionIds) {
-        return jdbc.query(lookup("validation/LoadTagsVersion"), singletonMap("id", validationVersionIds),
-                tagsByValidationIdExtractor);
     }
 
     public List<ValidationExportRow> exportValidations() {

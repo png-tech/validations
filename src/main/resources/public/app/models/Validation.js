@@ -18,6 +18,7 @@ Ext.define('app.models.Validation', {
 
     fields: [
         {name: 'messageId', mapping: 'message.id'},
+        {name: 'messageText', mapping: 'message.text'},
         {name: 'description'},
         {name: 'validationEntities'},
         {name: 'tags'},

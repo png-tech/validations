@@ -56,6 +56,7 @@ Ext.define('app.controllers.ValidationWindowController', {
         grid.getStore().remove(row);
     },
 
+    /** Добавление текста сообщения по его id. */
     onCodeOfMessageChange: function(){
         var messageId = this.getView().down('custom-combo[name=messageId]').getValue();
         this.getView().down('custom-combo[name=messageText]').setValue(messageId);
