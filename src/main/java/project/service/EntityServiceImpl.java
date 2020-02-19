@@ -33,7 +33,11 @@ public class EntityServiceImpl implements EntityService {
 
     @Override
     public void update(Entity entity) {
-        dao.update(entity);
+        if(entity.isDeactivated()) {
+            dao.updateDeactivated(entity);
+        } else {
+            dao.update(entity);
+        }
     }
 
     @Override

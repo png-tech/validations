@@ -22,7 +22,11 @@ import static project.dao.SearchParamsProcessor.process;
 @Repository
 public class OperationDao extends BaseVersionableModelDao<Operation> implements FindAbility<Operation>, OperationValidatorDao {
 
-    private RowMapper<Operation> mapper = (rs, rowNum) -> new Operation(rs.getString("id"), rs.getString("name"), rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+    private RowMapper<Operation> mapper = (rs, rowNum) -> {
+        Operation operation = new Operation(rs.getString("id"), rs.getString("name"), rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        operation.setDeactivated(rs.getBoolean("deactivated"));
+        return operation;
+    };
 
     public OperationDao(DataSource ds) {
         super(ds);
@@ -49,6 +53,10 @@ public class OperationDao extends BaseVersionableModelDao<Operation> implements 
         createHistory(operation);
     }
 
+    public void updateDeactivated(Operation operation) {
+        jdbc.update(lookup("operation/UpdateDeactivatedOperation"), prepareParams(operation));
+        createHistory(operation);
+    }
 
     public void remove(Operation operation) {
         int rowsAffected = jdbc.update(lookup("operation/DeleteOperation"), prepareParams(operation));

@@ -1,24 +1,11 @@
 package project.dao.validation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-
 import project.dao.BaseVersionableModelDao;
 import project.dao.ConcurrentModificationException;
 import project.dao.FindAbility;
@@ -30,11 +17,11 @@ import project.model.message.Message;
 import project.model.operation.Operation;
 import project.model.query.SearchParams;
 import project.model.tag.Tag;
-import project.model.validation.Severity;
-import project.model.validation.Validation;
-import project.model.validation.ValidationDto;
-import project.model.validation.ValidationEntity;
-import project.model.validation.ValidationExportRow;
+import project.model.validation.*;
+
+import javax.sql.DataSource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -48,7 +35,9 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
     private RowMapper<Validation> mapper = (rs, rowNum) -> {
         Message message = new Message(rs.getString("m_id"), rs.getString("m_text"), rs.getInt("m_version"), rs.getString("m_commentary"));
         Severity severity = Severity.resolveById(rs.getInt("severityId"));
-        return new Validation(rs.getString("id"), severity, message, rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        Validation validation = new Validation(rs.getString("id"), severity, message, rs.getString("description"), rs.getInt("version"), rs.getString("commentary"));
+        validation.setDeactivated(rs.getBoolean("deactivated"));
+        return validation;
     };
 
     private ResultSetExtractor<Map<String, Validation>> validationsByIdExtractor = rs -> {
@@ -93,6 +82,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         dto.entityNames = rs.getString("entityNames");
         dto.operationNames = rs.getString("operationNames");
         dto.tagNames = rs.getString("tagNames");
+        dto.deactivated = rs.getBoolean("deactivated");
 
         return dto;
     };
@@ -148,7 +138,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
     public Validation load(String validationId) {
         return requiredSingleResult(load(singletonList(validationId)));
     }
-
+    
     public List<Validation> load(List<String> validationIds) {
         Map<String, Validation> validations =
                 jdbc.query(lookup("validation/LoadValidation"), singletonMap("ids", validationIds), validationsByIdExtractor);
@@ -200,6 +190,15 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         for (Validation validation : validations) {
             createHistory(validation);
         }
+    }
+
+    public void updateDeactivated(Validation validation) {
+        jdbc.update(lookup("validation/UpdateDeactivatedValidation"), prepareParams(validation));
+
+        createEntityOperations(singletonList(validation));
+        createTags(singletonList(validation));
+
+        createHistory(validation);
     }
 
     private void createEntityOperations(List<Validation> validations) {
@@ -290,6 +289,7 @@ public class ValidationDao extends BaseVersionableModelDao<Validation> implement
         Map<String, Object> params = super.prepareParams(validation);
         params.put("severityId", validation.getSeverity().getId());
         params.put("messageId", validation.getMessage().getId());
+        params.put("messageText", validation.getMessage().getText());
         params.put("description", validation.getDescription());
         return params;
     }

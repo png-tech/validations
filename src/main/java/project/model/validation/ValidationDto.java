@@ -13,4 +13,5 @@ public class ValidationDto {
     public String operationNames;
     public String entityNames;
     public String tagNames;
+    public Boolean deactivated;
 }

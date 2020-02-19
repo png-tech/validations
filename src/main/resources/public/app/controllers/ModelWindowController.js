@@ -127,7 +127,9 @@ Ext.define('app.controllers.ModelWindowController', {
     setModelToForm: function (form, model) {
         // Версию модели обновлять не будем, чтобы была возможность сохранить старую версию в качестве актуальной.
         var version = form.down('numberfield[name=version]').getValue();
+        var deactivated = form.down('checkbox[name=deactivated]').getValue();
         model.set('version', version);
+        model.set('deactivated', deactivated);
         form.loadRecord(model);
     }
 

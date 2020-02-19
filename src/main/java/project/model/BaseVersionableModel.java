@@ -13,6 +13,9 @@ public class BaseVersionableModel extends AbstractModel implements Versionable, 
     /** Комментарий. */
     protected String commentary;
 
+    /** Флаг для проверки удаленных сущностей. */
+    protected Boolean deactivated;
+
     public BaseVersionableModel() {
     }
 
@@ -34,6 +37,14 @@ public class BaseVersionableModel extends AbstractModel implements Versionable, 
 
     public void setCommentary(String commentary) {
         this.commentary = commentary;
+    }
+
+    public Boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(Boolean deactivated) {
+        this.deactivated = deactivated;
     }
 
     @Override

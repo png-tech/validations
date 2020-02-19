@@ -138,6 +138,10 @@ Ext.define('app.views.ModelWindow', {
                 click: 'delete'
             }
         }
-    ]
+    ],
+
+    setReadOnly: function () {
+        this.down('button[name=delete]').setDisabled(true);
+    }
 
 });

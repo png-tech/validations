@@ -33,7 +33,11 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     public void update(Operation operation) {
-        dao.update(operation);
+        if(operation.isDeactivated()) {
+            dao.updateDeactivated(operation);
+        } else {
+            dao.update(operation);
+        }
     }
 
     @Override

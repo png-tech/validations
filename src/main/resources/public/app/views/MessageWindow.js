@@ -31,6 +31,13 @@ Ext.define('app.views.MessageWindow', {
                 xtype: 'numberfield',
                 name: 'version',
                 hidden: true
+            },
+            {
+                xtype: 'checkbox',
+                inputValue: true,
+                uncheckedValue: false,
+                name: 'deactivated',
+                hidden: true
             }
         ];
     }

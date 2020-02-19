@@ -3,7 +3,6 @@ package project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import project.dao.tag.TagDao;
 import project.dao.validation.ValidationDao;
 import project.model.Change;
@@ -32,7 +31,9 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public Validation load(String validationId) {
-        return dao.load(validationId);
+        Validation load = dao.load(validationId);
+//        Validation loadHist = dao.load(loadVersion);
+        return load;
     }
 
     @Override
@@ -42,7 +43,11 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void update(Validation validation) {
-        dao.update(validation);
+        if(validation.isDeactivated()) {
+            dao.updateDeactivated(validation);
+        } else {
+            dao.update(validation);
+        }
     }
 
     @Override

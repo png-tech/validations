@@ -4,7 +4,8 @@ Ext.define('app.models.BaseVersionableModel', {
     fields: [
         {name: 'id'},
         {name: 'commentary'},
-        {name: 'version'}
+        {name: 'version'},
+        {name: 'deactivated'}
     ]
 
 });
